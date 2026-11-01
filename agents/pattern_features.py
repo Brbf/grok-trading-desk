@@ -14,6 +14,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from .fabioquant_offline import read_local, PAIRS
+from .geometry_features import geometric_candidates
 
 HOUR = timedelta(hours=1)
 MAX_RAW_BYTES = 250_000
@@ -175,6 +176,7 @@ def analyze_derived_day(derived: Path, btc: Path, eth: Path) -> dict:
             "price_features": observation["price_features"],
             "news_features": observation["news_features"],
             "candle_patterns": patterns_from_closed_candles(bars),
+            "geometric_patterns": geometric_candidates(bars),
         })
     return {
         "schema": SCHEMA,
@@ -185,7 +187,8 @@ def analyze_derived_day(derived: Path, btc: Path, eth: Path) -> dict:
         "historical_only": True,
         "timeframe": "1h",
         "lookback_fully_closed_candles": 25,
-        "chart_patterns_not_yet_implemented": True,
+        "geometric_pattern_candidates_implemented": True,
+        "geometric_patterns_are_only_descriptive": True,
         "rows": rows,
     }
 
