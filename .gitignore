@@ -2,3 +2,7 @@
 __pycache__/
 *.pyc
 .venv/
+# Keep FabioQuant private research inputs and local outputs off GitHub
+local_data/
+local_exports/
+local_reports/
