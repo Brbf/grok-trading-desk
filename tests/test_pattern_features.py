@@ -140,9 +140,12 @@ class PatternTests(unittest.TestCase):
                 self.assertIn("price_features", row)
                 self.assertIn("news_features", row)
                 self.assertIn("candle_patterns", row)
+                self.assertIn("geometric_patterns", row)
+                self.assertTrue(row["geometric_patterns"]["descriptive_not_directional"])
             self.assertNotIn('"label"', json.dumps(result))
             self.assertTrue(result["no_future_labels_exposed"])
-            self.assertTrue(result["chart_patterns_not_yet_implemented"])
+            self.assertTrue(result["geometric_pattern_candidates_implemented"])
+            self.assertTrue(result["geometric_patterns_are_only_descriptive"])
 
     def test_cross_source_hash_mismatch_is_rejected(self):
         raw = json.dumps(price_page()).encode()
