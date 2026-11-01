@@ -19,8 +19,10 @@ jobs:
         with:
           python-version: '3.11'
       - name: Compile offline adapters and synthetic tests
-        run: python -m py_compile agents/fabioquant_offline.py agents/pattern_features.py tests/test_fabioquant_offline.py tests/test_pattern_features.py
+        run: python -m py_compile agents/fabioquant_offline.py agents/pattern_features.py agents/geometry_features.py scripts/pattern_ablation_11day.py tests/test_fabioquant_offline.py tests/test_pattern_features.py tests/test_geometry_features.py
       - name: Verify source provenance bridge
         run: python -m unittest discover -s tests -p 'test_fabioquant_offline.py' -v
       - name: Verify causal pattern feature layer
         run: python -m unittest discover -s tests -p 'test_pattern_features.py' -v
+      - name: Verify descriptive geometric detection and pivot delays
+        run: python -m unittest discover -s tests -p 'test_geometry_features.py' -v
