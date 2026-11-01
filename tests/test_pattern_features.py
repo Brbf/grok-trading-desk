@@ -118,7 +118,7 @@ class PatternTests(unittest.TestCase):
 
     def test_range_shapes_are_not_directional_predictions(self):
         source = price_page()
-        source[24] = [source[24][0], 97.0, 102.0, 101.0, 100.9, 15]
+        source[24] = [source[24][0], 97.0, 101.5, 101.0, 100.9, 15]
         candles = decode_hourly_asof(json.dumps(source).encode(),
                                      "2024-07-10T12:00:00Z")
         result = patterns_from_closed_candles(candles)
