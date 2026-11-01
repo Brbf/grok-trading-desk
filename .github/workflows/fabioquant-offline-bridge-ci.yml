@@ -1,9 +1,10 @@
-name: FabioQuant offline bridge tests
+name: FabioQuant offline bridge and pattern tests
 
 on:
   push:
     branches:
       - research/fabioquant-data-news-offline-2026-11-01
+      - research/pattern-features-offline-2026-11-01
   workflow_dispatch:
 
 permissions:
@@ -17,7 +18,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Compile offline adapter and synthetic tests
-        run: python -m py_compile agents/fabioquant_offline.py tests/test_fabioquant_offline.py
-      - name: Run bounded offline synthetic tests
+      - name: Compile offline adapters and synthetic tests
+        run: python -m py_compile agents/fabioquant_offline.py agents/pattern_features.py tests/test_fabioquant_offline.py tests/test_pattern_features.py
+      - name: Verify source provenance bridge
         run: python -m unittest discover -s tests -p 'test_fabioquant_offline.py' -v
+      - name: Verify causal pattern feature layer
+        run: python -m unittest discover -s tests -p 'test_pattern_features.py' -v
