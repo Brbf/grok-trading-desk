@@ -1,0 +1,187 @@
+# Paper scanner configuration.
+# Strategy numbers below are fixed rules, not a fit to a backtest.
+# There is no live-trading switch. Account size is paper equity only.
+
+risk:
+  account_currency: EUR
+  paper_equity_eur: 500
+  # Inside the 0.5%–1% band the owner asked for.
+  risk_per_trade: 0.0075
+  max_daily_loss: 0.03
+  # Flatten and stop for good once equity is 20% under the 500 EUR start.
+  kill_switch_drawdown: 0.20
+  max_open_positions: 2
+  # Sum of initial risk of open trades, as a fraction of equity.
+  max_open_risk: 0.02
+  max_gross_leverage: 5
+  # Refuse a trade whose minimum size would risk more than this multiple of the budget.
+  min_lot_risk_multiple: 1.25
+
+costs:
+  # Retail-style CFD costs. Applied on top of mid/last prices.
+  commission_bps_per_side: 0.35
+  # Extra adverse slippage as a fraction of the full spread, each side.
+  slippage_fraction_of_spread: 0.25
+  # Full bid/ask spread in basis points of price, used when the feed has no quotes.
+  spread_bps:
+    fx_major: 1.0
+    fx_jpy: 1.2
+    fx_cross: 1.6
+    fx_exotic: 6.0
+    metal: 1.5
+    energy: 3.0
+    index_us: 1.2
+    index_eu: 2.0
+    index_asia: 2.5
+    crypto: 4.0
+    stock_us: 1.5
+    stock_eu: 2.5
+    stock_asia: 3.0
+    unknown: 10.0
+
+strategy:
+  htf_bars: 4
+  htf_gap_seconds: 5400
+  ema_fast: 20
+  ema_slow: 50
+  donchian: 20
+  volume_lookback: 20
+  volume_ratio_min: 1.5
+  atr_period: 14
+  atr_median_lookback: 100
+  atr_ratio_min: 0.75
+  atr_ratio_max: 1.80
+  stop_atr: 1.5
+  max_hold_bars: 36
+  spread_atr_max: 0.20
+  scout_range_atr_min: 0.6
+  outlier_range_atr: 10
+  # Drop a queued entry if the next bar opens more than this many seconds later.
+  max_fill_delay_seconds: 10800
+  news_blackout_minutes: 30
+
+funnel:
+  history_bars: 260
+  batch_size: 25
+  pause_ms: 40
+  # Throughput limit per cycle so an 8 GB machine is not asked for every history at once.
+  # The discovered universe is not truncated; the cursor rotates on the next cycle.
+  max_history_requests_per_cycle: 400
+  max_selected_symbols: 40
+  stale_seconds: 300
+  spread_to_class_median_max: 3.0
+  min_session_deals: 1
+  # Stage-3 activity band. Wider than the signal rule; it only drops dead or broken markets.
+  activity_volume_ratio_min: 0.8
+  activity_volume_ratio_max: 5.0
+  activity_atr_ratio_min: 0.70
+  activity_atr_ratio_max: 2.20
+
+# Windows are exchange-local. The scanner stays idle outside them.
+# weekend: new_york_fx | sat_sun | none
+# rollover: skip 16:55–17:15 America/New_York (daily FX roll).
+sessions:
+  classes:
+    fx_major:
+      clock: london
+      weekend: new_york_fx
+      rollover: true
+      windows:
+        - {dow: [0, 1, 2, 3, 4], start: "08:00", end: "17:00"}
+    fx_jpy:
+      clock: london
+      weekend: new_york_fx
+      rollover: true
+      windows:
+        - {clock: tokyo, dow: [0, 1, 2, 3, 4], start: "09:00", end: "15:00"}
+        - {clock: london, dow: [0, 1, 2, 3, 4], start: "08:00", end: "17:00"}
+    fx_cross:
+      clock: london
+      weekend: new_york_fx
+      rollover: true
+      windows:
+        - {dow: [0, 1, 2, 3, 4], start: "08:00", end: "17:00"}
+    fx_exotic:
+      clock: london
+      weekend: new_york_fx
+      rollover: true
+      windows:
+        - {dow: [0, 1, 2, 3, 4], start: "08:00", end: "16:00"}
+    metal:
+      clock: london
+      weekend: new_york_fx
+      rollover: true
+      windows:
+        - {dow: [0, 1, 2, 3, 4], start: "08:00", end: "17:00"}
+    index_us:
+      clock: new_york
+      weekend: sat_sun
+      rollover: false
+      windows:
+        - {dow: [0, 1, 2, 3, 4], start: "09:35", end: "15:45"}
+    index_eu:
+      clock: europe
+      weekend: sat_sun
+      rollover: false
+      windows:
+        - {dow: [0, 1, 2, 3, 4], start: "09:15", end: "17:15"}
+    index_asia:
+      clock: tokyo
+      weekend: sat_sun
+      rollover: false
+      windows:
+        - {dow: [0, 1, 2, 3, 4], start: "09:15", end: "15:00"}
+    energy:
+      clock: new_york
+      weekend: sat_sun
+      rollover: false
+      windows:
+        - {dow: [0, 1, 2, 3, 4], start: "09:00", end: "14:30"}
+    crypto:
+      clock: utc
+      weekend: none
+      rollover: false
+      windows:
+        - {dow: [0, 1, 2, 3, 4, 5, 6], start: "07:00", end: "21:00"}
+    stock_us:
+      clock: new_york
+      weekend: sat_sun
+      rollover: false
+      windows:
+        - {dow: [0, 1, 2, 3, 4], start: "09:35", end: "15:45"}
+    stock_eu:
+      clock: europe
+      weekend: sat_sun
+      rollover: false
+      windows:
+        - {dow: [0, 1, 2, 3, 4], start: "09:15", end: "17:15"}
+    stock_asia:
+      clock: tokyo
+      weekend: sat_sun
+      rollover: false
+      windows:
+        - {dow: [0, 1, 2, 3, 4], start: "09:15", end: "15:00"}
+    unknown:
+      clock: utc
+      weekend: sat_sun
+      rollover: false
+      windows: []
+
+  # Per-symbol overrides. asset_class replaces classification; other fields replace the class schedule.
+  symbol_overrides:
+    HK50: &hk
+      asset_class: index_asia
+      clock: hong_kong
+      weekend: sat_sun
+      rollover: false
+      windows:
+        - {dow: [0, 1, 2, 3, 4], start: "09:45", end: "16:00"}
+    HSI: *hk
+    AUS200: &aus
+      asset_class: index_asia
+      clock: sydney
+      weekend: sat_sun
+      rollover: false
+      windows:
+        - {dow: [0, 1, 2, 3, 4], start: "10:15", end: "15:45"}
+    AU200: *aus
